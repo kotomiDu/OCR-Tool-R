@@ -1,2 +1,3 @@
 testoutput/
 east_icdar2015_resnet_v1_50_rbox/
+__pycache__/ocr.cpython-37.pyc
