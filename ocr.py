@@ -110,10 +110,10 @@ def detect_words(img,words_to_detect,framefile, idx,number_flag):
         os.makedirs(framefile)
     cv2.imwrite(framefile+'/'+str(idx+1)+'.bmp', img)
     if number_flag :
-        os.system('/bin/bash -c "\"tesseract" '+framefile+'/'+str(idx+1)+'.bmp /home/kotomi/output'+str(idx)+' --tessdata-dir /home/kotomi/tesstutorial/engoutput25 --oem 1 --psm 7 -l eng"')
+        os.system('/bin/bash -c "\"tesseract" '+framefile+'/'+str(idx+1)+'.bmp /home/kotomi/output'+str(idx)+' --tessdata-dir /home/kotomi/tesstutorial/engoutput24 --oem 1 --psm 7 -l eng"')
     else:
-        os.system('/bin/bash -c "\"tesseract" '+framefile+'/'+str(idx+1)+'.bmp /home/kotomi/output'+str(idx)+' --tessdata-dir /home/kotomi/tesstutorial/engoutput25 --oem 1 --psm 13 -l eng"')
-    os.system('/bin/bash -c "\"tesseract" '+framefile+'/'+str(idx+1)+'.bmp /home/kotomi/output'+str(idx)+' --tessdata-dir '+ FLAGS.tesseract_model_path+' --oem 1 --psm 7 -l eng"')
+        os.system('/bin/bash -c "\"tesseract" '+framefile+'/'+str(idx+1)+'.bmp /home/kotomi/output'+str(idx)+' --tessdata-dir /home/kotomi/tesstutorial/engoutput19 --oem 1 --psm 13 -l eng"')
+    #os.system('/bin/bash -c "\"tesseract" '+framefile+'/'+str(idx+1)+'.bmp /home/kotomi/output'+str(idx)+' --tessdata-dir '+ FLAGS.tesseract_model_path+' --oem 1 --psm 7 -l eng"')
     src_text = open('/home/kotomi/output'+str(idx)+'.txt', 'r', errors='ignore')
     text = src_text.read()
     src_text.close()
@@ -124,11 +124,7 @@ def detect_words(img,words_to_detect,framefile, idx,number_flag):
     os.remove('/home/kotomi/output'+str(idx)+'.txt')
     return text
 
-
-
-def recognition(filename):
-  
-
+def runtesorflow():
     os.environ['CUDA_VISIBLE_DEVICES'] = FLAGS.gpu_list
 
 
@@ -137,111 +133,115 @@ def recognition(filename):
     except OSError as e:
         if e.errno != 17:
             raise
-
     
-    with tf.get_default_graph().as_default():
-        input_images = tf.placeholder(tf.float32, shape=[None, None, None, 3], name='input_images')
-        global_step = tf.get_variable('global_step', [], initializer=tf.constant_initializer(0), trainable=False)
 
-        f_score, f_geometry = model.model(input_images, is_training=False)
+    global f_geometry,f_score,input_images
+    
+    #with tf.get_default_graph().as_default():
+    input_images = tf.placeholder(tf.float32, shape=[None, None, None, 3], name='input_images')
+    global_step = tf.get_variable('global_step', [], initializer=tf.constant_initializer(0), trainable=False)
 
-        variable_averages = tf.train.ExponentialMovingAverage(0.997, global_step)
-        saver = tf.train.Saver(variable_averages.variables_to_restore())
+    f_score, f_geometry = model.model(input_images, is_training=False)
 
-        with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as sess:
-            ckpt_state = tf.train.get_checkpoint_state(FLAGS.checkpoint_path)
-            model_path = os.path.join(FLAGS.checkpoint_path, os.path.basename(ckpt_state.model_checkpoint_path))
-            print('Restore from {}'.format(model_path))
-            saver.restore(sess, model_path)
+    variable_averages = tf.train.ExponentialMovingAverage(0.997, global_step)
+    saver = tf.train.Saver(variable_averages.variables_to_restore())
 
-            start_time = time.time()
-            num_frames = 0
+    sess =  tf.Session(config=tf.ConfigProto(allow_soft_placement=True))
+    ckpt_state = tf.train.get_checkpoint_state(FLAGS.checkpoint_path)
+    model_path = os.path.join(FLAGS.checkpoint_path, os.path.basename(ckpt_state.model_checkpoint_path))
+    print('Restore from {}'.format(model_path))
+    saver.restore(sess, model_path)
+   
+    return sess
 
-            frame = cv2.imread(filename)
-                
-            if frame is not None:
-                im = frame.copy()
-                im = im[:, :, ::-1]
-                num_frame = filename.split("/")[-1].split('.png')[0]
-                im_fn = str(num_frames).zfill(5)+'.png'
-                im_resized, (ratio_h, ratio_w) = resize_image(im)
+def recognition(filename,sess):
+    start_time = time.time()
+    num_frames = 0
 
-                timer = {'net': 0, 'restore': 0, 'nms': 0}
-                start = time.time()
-                score, geometry = sess.run([f_score, f_geometry], feed_dict={input_images: [im_resized]})
-                timer['net'] = time.time() - start
+    frame = cv2.imread(filename)
 
-                boxes, timer = detect(score_map=score, geo_map=geometry, timer=timer)
-                print('{} : net {:.0f}ms, restore {:.0f}ms, nms {:.0f}ms'.format(
-                    im_fn, timer['net'] * 1000, timer['restore'] * 1000, timer['nms'] * 1000))
+    if frame is not None:
+        im = frame.copy()
+        im = im[:, :, ::-1]
+        num_frame = filename.split("/")[-1].split('.png')[0]
+        im_fn = str(num_frames).zfill(5)+'.png'
+        im_resized, (ratio_h, ratio_w) = resize_image(im)
 
-                if boxes is not None:
-                    boxes = boxes[:, :8].reshape((-1, 4, 2))
-                    boxes[:, :, 0] /= ratio_w
-                    boxes[:, :, 1] /= ratio_h
+        timer = {'net': 0, 'restore': 0, 'nms': 0}
+        start = time.time()
+        score, geometry = sess.run([f_score, f_geometry], feed_dict={input_images: [im_resized]})
+        timer['net'] = time.time() - start
 
-                duration = time.time() - start_time
-                print('[timing] {}'.format(duration))
+        boxes, timer = detect(score_map=score, geo_map=geometry, timer=timer)
+        print('{} : net {:.0f}ms, restore {:.0f}ms, nms {:.0f}ms'.format(
+            im_fn, timer['net'] * 1000, timer['restore'] * 1000, timer['nms'] * 1000))
 
-                frame_flag_detect = False
-                # save to file
-                if boxes is not None:
-                    res_file = os.path.join(
-                        FLAGS.output_dir,
-                        '{}.txt'.format(
-                            os.path.basename(im_fn).split('.')[0]))
-                    framefile = os.path.join( FLAGS.output_dir, os.path.basename(im_fn).split('.')[0])
+        if boxes is not None:
+            boxes = boxes[:, :8].reshape((-1, 4, 2))
+            boxes[:, :, 0] /= ratio_w
+            boxes[:, :, 1] /= ratio_h
+
+        duration = time.time() - start_time
+        print('[timing] {}'.format(duration))
+
+        frame_flag_detect = False
+        # save to file
+        if boxes is not None:
+            res_file = os.path.join(
+                FLAGS.output_dir,
+                '{}.txt'.format(
+                    os.path.basename(im_fn).split('.')[0]))
+            framefile = os.path.join( FLAGS.output_dir, os.path.basename(im_fn).split('.')[0])
+            
+            with open(res_file, 'w') as f:
+                for idx, box in enumerate(boxes):
+                    #skip non-ROI box
+                    if (box[0, 0] > 600 and box[0,1] > 40 and box[2,0] < 1500 and box[2,1] < 80):
+                        continue
+                    if (box[0,0] > 1600 and box[0,1] > 340 and box[2,0] < 1900 and box[2,1] < 1100):
+                        continue
+                    if (box[0,0] > 860 and box[0,1] > 900 and box[2,0] < 1100 and box[2,1] < 1100):
+                        continue
+                    invalid_flag = False
+                    for i  in box:
+                        for j in i:
+                            if j < 0:
+                                invalid_flag =True
+                    if invalid_flag == True:
+                        continue
                     
-                    with open(res_file, 'w') as f:
-                        for idx, box in enumerate(boxes):
-                            #skip non-ROI box
-                            if (box[0, 0] > 600 and box[0,1] > 40 and box[2,0] < 1500 and box[2,1] < 80):
-                                continue
-                            if (box[0,0] > 1600 and box[0,1] > 340 and box[2,0] < 1900 and box[2,1] < 1100):
-                                continue
-                            if (box[0,0] > 860 and box[0,1] > 900 and box[2,0] < 1100 and box[2,1] < 1100):
-                                continue
-                            invalid_flag = False
-                            for i  in box:
-                                for j in i:
-                                    if j < 0:
-                                        invalid_flag =True
-                            if invalid_flag == True:
-                                continue
-                            
-                            number_flag = False
-                            if (box[0,0] > 1770 and box[0,1] > 30 and box[2,0] < 1822 and box[2,1] < 64):
-                                number_flag = True
+                    number_flag = False
+                    if (box[0,0] > 1770 and box[0,1] > 30 and box[2,0] < 1822 and box[2,1] < 64):
+                        number_flag = True
 
-                            # to avoid submitting errors
-                            box = sort_poly(box.astype(np.int32))
-                            if np.linalg.norm(box[0] - box[1]) < 5 or np.linalg.norm(box[3] - box[0]) < 5:
-                                continue
-                            
-                            f.write('{},{},{},{},{},{},{},{}\r\n'.format(
-                                box[0, 0], box[0, 1], box[1, 0], box[1, 1], box[2, 0], box[2, 1], box[3, 0],
-                                box[3, 1],
-                            ))
-                            cv2.polylines(im[:, :, ::-1], [box.astype(np.int32).reshape((-1, 1, 2))], True,
-                                            color=(255, 255, 0), thickness=1)
-                            coor_min = np.min(box, axis=0)
-                            coor_max = np.max(box, axis=0)
-                            detected_text = detect_words(frame[coor_min[1]:coor_max[1],coor_min[0]:coor_max[0], :],FLAGS.words_to_detect,framefile,idx,number_flag)
-                            print(detected_text.rstrip())
-
-                            #put text on image
-                            cv2.putText(im[:, :, ::-1], detected_text.rstrip(), (box[0, 0], box[0, 1]-2), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255,0,0), 1, cv2.LINE_AA)
-
+                    # to avoid submitting errors
+                    box = sort_poly(box.astype(np.int32))
+                    if np.linalg.norm(box[0] - box[1]) < 5 or np.linalg.norm(box[3] - box[0]) < 5:
+                        continue
                     
-                
-                if not FLAGS.no_write_images:
-                    img_path = os.path.join(FLAGS.output_dir, os.path.basename(im_fn))
-                    print(img_path)
-                    cv2.imwrite(img_path, im[:, :, ::-1])
+                    f.write('{},{},{},{},{},{},{},{}\r\n'.format(
+                        box[0, 0], box[0, 1], box[1, 0], box[1, 1], box[2, 0], box[2, 1], box[3, 0],
+                        box[3, 1],
+                    ))
+                    cv2.polylines(im[:, :, ::-1], [box.astype(np.int32).reshape((-1, 1, 2))], True,
+                                    color=(255, 255, 0), thickness=1)
+                    coor_min = np.min(box, axis=0)
+                    coor_max = np.max(box, axis=0)
+                    detected_text = detect_words(frame[coor_min[1]:coor_max[1],coor_min[0]:coor_max[0], :],FLAGS.words_to_detect,framefile,idx,number_flag)
+                    print(detected_text.rstrip())
 
-                num_frames += 1
-                return im[:, :, ::-1]
+                    #put text on image
+                    cv2.putText(im[:, :, ::-1], detected_text.rstrip(), (box[0, 0], box[0, 1]-2), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0,0,255), 1, cv2.LINE_AA)
+
+            
+
+        if not FLAGS.no_write_images:
+            img_path = os.path.join(FLAGS.output_dir, os.path.basename(im_fn))
+            print(img_path)
+            cv2.imwrite(img_path, im[:, :, ::-1])
+
+        num_frames += 1
+        return im[:, :, ::-1]
 
 if __name__ == '__main__':
     tf.app.run()
-    recognition()

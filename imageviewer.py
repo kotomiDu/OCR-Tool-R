@@ -31,6 +31,7 @@ class ImageViewer(QMainWindow):
         self.imageLabel.setBackgroundRole(QPalette.Base)
         
         self.imageLabel.setScaledContents (True)
+        
 
         
 
@@ -54,9 +55,10 @@ class ImageViewer(QMainWindow):
   
 
         self.setWindowTitle("Image Viewer")
-        self.width = 600
-        self.height = 500
+        self.width = 1000
+        self.height = 700
         self.resize(self.width, self.height)
+        self.sess = ocr.runtesorflow()
 
     def open(self):
         fileName, _ = QFileDialog.getOpenFileName(self, "Open File",
@@ -77,12 +79,13 @@ class ImageViewer(QMainWindow):
             
     def ocr(self):
         imgname =  self.filePath.text()
-        ocrimg = ocr.recognition(imgname)
+        ocrimg = ocr.recognition(imgname,self.sess)
+        ocrimg = cv2.resize(ocrimg, (self.width,self.height - 10), interpolation=cv2.INTER_CUBIC)
         height, width, channel = ocrimg.shape
         cv2.cvtColor(ocrimg, cv2.COLOR_BGR2RGB, ocrimg)
         QImg = QImage(ocrimg.data, width, height, width*3, QImage.Format_RGB888)
         ocrpix = QPixmap.fromImage(QImg)
-        ocrpix = ocrpix.scaled(self.width,self.height - 10)           
+        #ocrpix = ocrpix.scaled(self.width,self.height - 10)           
         self.imageLabel.setPixmap(ocrpix)
         
 
