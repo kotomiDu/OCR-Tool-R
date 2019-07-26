@@ -6,8 +6,7 @@ a workbench for OCR
 
 ### Installation
 1. tensorflow-cpu == 1.5
-2. openvino R2
-3. python == 3.6
+2. python == 3.6
 
 
 ### Download
