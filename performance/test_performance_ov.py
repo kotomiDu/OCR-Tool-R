@@ -35,22 +35,19 @@ from openvino.inference_engine import IENetwork, IEPlugin
 
 # construct the argument parse and parse the arguments
 ap = argparse.ArgumentParser()
-ap.add_argument("-i", "--input", required=True,
+ap.add_argument("-i", "--input",  default= "/home/kotomi/POC/testinput/poc-demo.mp4",
 	help="path to input video")
 ap.add_argument("-m", "--model", help="Required. Path to an .xml file with a trained model.",
-                    required=True, type=str)
+                    default= "./east_icdar2015_resnet_v1_50_rbox/FP32/frozen_model_temp.xml", type=str)
 
 ap.add_argument("-l", "--cpu_extension",
                     help="Optional. Required for CPU custom layers. Absolute path to a shared library with the "
-                        "kernels implementations.", type=str, default=None)
+                        "kernels implementations.", type=str, default="./openvino/inference_engine/lib/intel64/libcpu_extension.so")
 ap.add_argument("-pp", "--plugin_dir", help="Optional. Path to a plugin folder", type=str, default=None)
 ap.add_argument("-d", "--device",
                     help="Optional. Specify the target device to infer on; CPU, GPU, FPGA, HDDL or MYRIAD is "
                         "acceptable. The demo will look for a suitable plugin for device specified. "
                         "Default value is CPU", default="CPU", type=str)
-ap.add_argument("--labels", help="Optional. Path to labels mapping file", default=None, type=str)
-ap.add_argument("-pt", "--prob_threshold", help="Optional. Probability threshold for detections filtering",
-                    default=0.5, type=float)
 args = vars(ap.parse_args())
 
 
@@ -88,7 +85,7 @@ def main():
         detect_time += infer.detect_timer['net'] + infer.detect_timer['restore'] + infer.detect_timer['nms']
         recog_time += infer.recog_timer
 
-        if frame_idx > 10:
+        if frame_idx == 10:
             break
     total_end = time.time()
     totaltime = total_end - total_start 

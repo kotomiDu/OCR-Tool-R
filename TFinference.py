@@ -36,6 +36,7 @@ class TFinference:
 
     def start(self,frame):
         autopad = 0
+        self.recog_timer = 0 
         if frame is not None:
             im = frame.copy()
             im = im[:, :, ::-1]

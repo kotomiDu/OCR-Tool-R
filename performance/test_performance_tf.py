@@ -76,7 +76,7 @@ def main():
         detect_time += infer.detect_timer['net'] + infer.detect_timer['restore'] + infer.detect_timer['nms']
         recog_time += infer.recog_timer
 
-        if frame_idx > 1:
+        if frame_idx == 10:
             break
     total_end = time.time()
     totaltime = total_end - total_start 
