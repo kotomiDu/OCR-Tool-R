@@ -22,8 +22,8 @@ class OVinference:
         self.feed_dict = {}
         self.net = None
         self.n, self.c, self.h, self.w = 0, 0 ,0 ,0
-        self.recog_timer = 0 
-        self.detect_timer = {'net': 0, 'restore': 0, 'nms': 0} 
+        self.recog_timer = None
+        self.detect_timer = None
     
     def load_model(self):
         log.basicConfig(format="[ %(levelname)s ] %(message)s", level=log.INFO, stream=sys.stdout)
@@ -33,7 +33,7 @@ class OVinference:
         # Plugin initialization for specified device and load extensions library if specified
         log.info("Initializing plugin for {} device...".format(self.device))
         plugin = IEPlugin(device=self.device, plugin_dirs=self.plugin_dir)
-        plugin.set_config({"CPU_THREADS_NUM":"1"})
+        #plugin.set_config({"CPU_THREADS_NUM":"1"})
         
         if self.cpu_extension and 'CPU' in self.device:
             plugin.add_cpu_extension(self.cpu_extension)
@@ -70,7 +70,8 @@ class OVinference:
             self.feed_dict[self.img_info_input_blob] = [self.h, self.w, 1]
     
     def start(self,frame):
-        self.recog_timer = 0 
+        self.recog_timer = 0
+        self.detect_timer = {'net': 0, 'restore': 0, 'nms': 0}  
         cur_request_id = 0  
         autopad = 0        
         im = frame.copy()       
@@ -84,8 +85,9 @@ class OVinference:
 
         in_frame = in_frame.transpose((2, 0, 1))  # Change data layout from HWC to CHW
         in_frame = in_frame.reshape((self.n, self.c, self.h, self.w))
-
-
+         
+       
+        
         inf_start = time.time()
         self.feed_dict[self.input_blob] = in_frame
         self.exec_net.start_async(request_id=cur_request_id, inputs=self.feed_dict)
@@ -103,6 +105,8 @@ class OVinference:
             geometry = res_geometry[0]  
             
             boxes, self.detect_timer = self.detect(score_map=score, geo_map=geometry, timer=self.detect_timer)
+            print('net {:.0f}ms, restore {:.0f}ms, nms {:.0f}ms'.format(
+                             self.detect_timer['net'] * 1000, self.detect_timer['restore'] * 1000, self.detect_timer['nms'] * 1000))
 
             if boxes is not None:         
                 boxes = boxes[:, :8].reshape((-1, 4, 2))                   
