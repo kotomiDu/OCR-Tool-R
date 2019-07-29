@@ -12,6 +12,7 @@ a workbench for OCR
 ### Download
 1. download [model file](https://drive.google.com/open?id=1wZG5i1cu-Qf_4hn4W5m9m3fKCNYrvVDK)
 2. download [OpenVINO lib](https://drive.google.com/open?id=1g5YamnCw5pY5HfvTzFz1Eyk6dnjmNpmT)
+3. download [demo video]（）
 
 ### set OpenVINO environment
 1.edit sg file,change INSTALLDIR to openvino folder (!!! absolute path)
@@ -28,4 +29,7 @@ vi <user_directory>/.bashrc
 ```
 source <user_directory>/OCR-Tool-R/openvino/bin/setupvars.sh
 ```
+
+### run video demo
+python3 ocr-video-demo/save_key_events.py -i testinput/1080p.mp4 -m /east_icdar2015_resnet_v1_50_rbox/FP32/96_512/frozen_model_temp.xml -d CPU -l openvino/deployment_tools/inference_engine/lib/intel64/libcpu_extension.so -o output/
 
