@@ -10,7 +10,7 @@ a workbench for OCR
 
 
 ### Download
-1. downlood [model file](https://drive.google.com/open?id=1wZG5i1cu-Qf_4hn4W5m9m3fKCNYrvVDK)
+1. download [model file](https://drive.google.com/open?id=1wZG5i1cu-Qf_4hn4W5m9m3fKCNYrvVDK)
 2. download [OpenVINO lib](https://drive.google.com/open?id=1g5YamnCw5pY5HfvTzFz1Eyk6dnjmNpmT)
 
 ### set OpenVINO environment
