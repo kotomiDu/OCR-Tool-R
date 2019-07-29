@@ -13,7 +13,7 @@ a workbench for OCR
 1. download [model file](https://drive.google.com/open?id=1wZG5i1cu-Qf_4hn4W5m9m3fKCNYrvVDK)
 2. download OpenVINO lib
    [Linux version](https://drive.google.com/open?id=1g5YamnCw5pY5HfvTzFz1Eyk6dnjmNpmT)
-   or [Windows version](https://drive.google.com/open?id=1g5YamnCw5pY5HfvTzFz1Eyk6dnjmNpmT)
+   or [Windows version](https://drive.google.com/open?id=1-xgS_JXjnM-Mf-K6LbZMK79C1XF0SkHT)
 3. download [testinput file](https://drive.google.com/open?id=1ZuACWowRZ0PW4Rawi_73c0OWfuzCzk9A)
 
 ### set OpenVINO environment
