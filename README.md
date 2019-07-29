@@ -12,7 +12,7 @@ a workbench for OCR
 ### Download
 1. download [model file](https://drive.google.com/open?id=1wZG5i1cu-Qf_4hn4W5m9m3fKCNYrvVDK)
 2. download [OpenVINO lib](https://drive.google.com/open?id=1g5YamnCw5pY5HfvTzFz1Eyk6dnjmNpmT)
-3. download [testinput file](https://drive.google.com/open?id=1ZuACWowRZ0PW4Rawi_73c0OWfuzCzk9A）
+3. download [testinput file](https://drive.google.com/open?id=1ZuACWowRZ0PW4Rawi_73c0OWfuzCzk9A)
 
 ### set OpenVINO environment
 1.edit sg file,change INSTALLDIR to openvino folder (!!! absolute path)
