@@ -17,20 +17,31 @@ a workbench for OCR
 3. download [testinput file](https://drive.google.com/open?id=1ZuACWowRZ0PW4Rawi_73c0OWfuzCzk9A)
 
 ### set OpenVINO environment
-1.edit sg file,change INSTALLDIR to openvino folder (!!! absolute path)
+1. linux
+## edit sh file,change INSTALLDIR to openvino folder (!!! absolute path)
 ```
 cd openvino/bin
 vim setupvars.sh
-INSTALLDIR=<user_directory>/OCR-Tool-R/openvino
+INSTALLDIR=<user_directory>/openvino
 ```
-2.Open the .bashrc file in <user_directory>: 
+## option1. temporarily set your environment variables
 ```
-vi <user_directory>/.bashrc
+source <user_directory>/openvino/bin/setupvars.sh
 ```
-3.Add this line to the end of the file: 
+## option2. permanently set your environment variables
+
+1.Open the .bashrc file: 
 ```
-source <user_directory>/OCR-Tool-R/openvino/bin/setupvars.sh
+vi .bashrc
 ```
+2. Add this line to the end of the file: 
+```
+source <user_directory>/openvino/bin/setupvars.sh
+```
+3. Save and close the file: press the Esc key and type :wq
+4. To test your change, open a new terminal. You will see [setupvars.sh] OpenVINO environment initialized.
+
+more guide in [OpenVINO](https://docs.openvinotoolkit.org/latest/_docs_install_guides_installing_openvino_linux.html)
 
 ### Run video demo
 1. linux
