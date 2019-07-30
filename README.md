@@ -41,7 +41,7 @@ source <user_directory>/openvino/bin/setupvars.sh
 3. Save and close the file: press the Esc key and type :wq
 4. To test your change, open a new terminal. You will see [setupvars.sh] OpenVINO environment initialized.
 
-*more guide in [linux OpenVINO](https://docs.openvinotoolkit.org/latest/_docs_install_guides_installing_openvino_linux.html)*
+>more guide in [intel OpenVINO](https://docs.openvinotoolkit.org/latest/_docs_install_guides_installing_openvino_linux.html)
 
 **Windows**
 ### Run video demo
