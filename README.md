@@ -18,17 +18,17 @@ a workbench for OCR
 
 ### set OpenVINO environment
 **Linux**
-- edit sh file,change INSTALLDIR to openvino folder (!!! absolute path)**
+- edit sh file,change INSTALLDIR to openvino folder (!!! absolute path)
 ```
 cd openvino/bin
 vim setupvars.sh
 INSTALLDIR=<user_directory>/openvino
 ```
-- option1. temporarily set your environment variables**
+- option1. temporarily set your environment variables
 ```
 source <user_directory>/openvino/bin/setupvars.sh
 ```
-- option2. permanently set your environment variables**
+- option2. permanently set your environment variables
 
 1. Open the .bashrc file: 
 ```
