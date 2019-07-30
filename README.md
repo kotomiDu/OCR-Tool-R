@@ -17,7 +17,7 @@ a workbench for OCR
 3. download [testinput file](https://drive.google.com/open?id=1ZuACWowRZ0PW4Rawi_73c0OWfuzCzk9A)
 
 ### set OpenVINO environment
-**Linux**
+- Linux
 **edit sh file,change INSTALLDIR to openvino folder (!!! absolute path)**
 ```
 cd openvino/bin
@@ -42,7 +42,7 @@ source <user_directory>/openvino/bin/setupvars.sh
 4. To test your change, open a new terminal. You will see [setupvars.sh] OpenVINO environment initialized.
 
 more guide in [OpenVINO](https://docs.openvinotoolkit.org/latest/_docs_install_guides_installing_openvino_linux.html)
-
+- Windows
 ### Run video demo
 1. linux
 ```
