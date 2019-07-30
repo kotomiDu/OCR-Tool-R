@@ -1,6 +1,7 @@
 import sys
 import cv2
 import numpy as np
+from sys import platform
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import QApplication, QDialog, QFileDialog, QGridLayout, QLabel, QPushButton
 from PyQt5.QtCore import pyqtSlot
@@ -19,13 +20,18 @@ ap.add_argument("-om", "--ovmodel", help="Required. Path to an .xml file with a 
 
 ap.add_argument("-l", "--cpu_extension",
                     help="Optional. Required for CPU custom layers. Absolute path to a shared library with the "
-                        "kernels implementations.", type=str, default="./openvino/inference_engine/lib/intel64/libcpu_extension.so")
+                        "kernels implementations.", type=str, default="")
 ap.add_argument("-pp", "--plugin_dir", help="Optional. Path to a plugin folder", type=str, default=None)
 ap.add_argument("-d", "--device",
                     help="Optional. Specify the target device to infer on; CPU, GPU, FPGA, HDDL or MYRIAD is "
                         "acceptable. The demo will look for a suitable plugin for device specified. "
                         "Default value is CPU", default="CPU", type=str)
 args = vars(ap.parse_args())
+
+if platform == "linux":
+    args["cpu_extension"] = "./openvino/inference_engine/lib/intel64/libcpu_extension.so"
+elif platform == "win32":
+    args["cpu_extenstion"] = "./openvino/deployment_tools/inference_engine/lib/intel64/Release/cpu_extension.dll"
 
 class win(QDialog):
     def __init__(self):
@@ -58,7 +64,7 @@ class win(QDialog):
 
         #model load
       
-        #ovmode_path = 
+         
         self.tfinfer = TFinference(args["tfmodel_path"])
         self.tfinfer.load_model()
         self.ovinfer = OVinference(args["ovmodel"],args["device"],args["plugin_dir"],args["cpu_extension"])
