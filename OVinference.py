@@ -135,7 +135,7 @@ class OVinference:
                     else:
                         cv2.putText(frame[:, :, :], res_text, (box[0], box[1]-2), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0,0,255), 1, cv2.LINE_AA)
 
-        return frame
+        return frame, self.detect_timer, self.recog_timer
     
     def detect(self,score_map, geo_map, timer, score_map_thresh=0.8, box_thresh=0.1, nms_thres=0.2):
         '''

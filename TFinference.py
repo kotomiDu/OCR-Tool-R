@@ -82,7 +82,7 @@ class TFinference:
                                         
 
     
-        return frame
+        return frame, self.detect_timer, self.recog_timer
 
     def detect(self,score_map, geo_map, timer, score_map_thresh=0.8, box_thresh=0.1, nms_thres=0.2):
         '''
