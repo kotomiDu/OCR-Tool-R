@@ -74,7 +74,9 @@ class TFinference:
                     res_text = recog_words(im[box[1]-autopad:box[3]+autopad,box[0]-autopad:box[2]+autopad, ::-1],number_flag)  
                     inf_end = time.time()
                     self.recog_timer += inf_end - inf_start  
-                   
+                    
+                    cv2.rectangle(frame[:,:,:], (box[0],box[1]),(box[2],box[3]), (255,255,0), 2)
+
                     if abs(box[1]-box[3]) < 25:
                         cv2.putText(frame[:, :, :], res_text, (box[0], box[1]-2), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0,0,255), 1, cv2.LINE_AA)
                     else:
@@ -82,7 +84,7 @@ class TFinference:
                                         
 
     
-        return frame
+        return frame, self.detect_timer, self.recog_timer
 
     def detect(self,score_map, geo_map, timer, score_map_thresh=0.8, box_thresh=0.1, nms_thres=0.2):
         '''

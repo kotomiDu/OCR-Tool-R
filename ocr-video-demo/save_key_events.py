@@ -8,6 +8,7 @@ import cv2
 import logging as log
 import sys
 import os
+import numpy as np
 from threading import Thread
 from queue import Queue
 
