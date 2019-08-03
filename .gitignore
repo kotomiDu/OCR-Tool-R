@@ -1,8 +1,9 @@
 testoutput/
-testinput/
 east_icdar2015_resnet_v1_50_rbox/
+__pycache__/ocr.cpython-37.pyc
 openvino/
 ocr-video-demo/output/
-*.pyc
-.vscode/
-
+testinput/1.mp4
+testinput/1080p.mp4
+output/sparkletime.avi
+*pyc
