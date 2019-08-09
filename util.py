@@ -7,10 +7,10 @@ from icdar import restore_rectangle
 
 def recog_words(img,number_flag):    
     if number_flag :
-        tessdata_dir_config = r'--tessdata-dir "/home/blin/Downloads/OCR-Tool-R/tesseract/model19" --oem 1 --psm 13 -l eng'
+        tessdata_dir_config = r'--tessdata-dir "/home/blin/OCR-Tool-R/tesseract/model19" --oem 1 --psm 13 -l eng'
        
     else:
-        tessdata_dir_config = r'--tessdata-dir "/home/blin/Downloads/OCR-Tool-R/tesseract/model19" --oem 1 --psm 13 -l eng'
+        tessdata_dir_config = r'--tessdata-dir "/home/blin/OCR-Tool-R/tesseract/model19" --oem 1 --psm 13 -l eng'
 
     text = pytesseract.image_to_string(img, lang='eng', config=tessdata_dir_config)
     return text.rstrip()

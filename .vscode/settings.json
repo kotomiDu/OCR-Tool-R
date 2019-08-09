@@ -1,4 +1,4 @@
 {
-    "python.pythonPath": "/home/blin/anaconda3/envs/py36-tf15-cpu/bin/python",
+    "python.pythonPath": "/home/blin/anaconda3/envs/ocr/bin/python",
     "python.linting.enabled": false
 }

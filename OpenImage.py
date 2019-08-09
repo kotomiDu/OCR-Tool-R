@@ -20,6 +20,8 @@ ap.add_argument("-om", "--ovmodel", help="Required. Path to an .xml file with a 
                  default="./east_icdar2015_resnet_v1_50_rbox/FP32/frozen_model_temp.xml",
                   type=str)
 
+ap.add_argument("-md","--model", default='tf', type=str)                
+
 ap.add_argument("-l", "--cpu_extension",
                     help="Optional. Required for CPU custom layers. Absolute path to a shared library with the "
                         "kernels implementations.", type=str, default="")
@@ -49,8 +51,7 @@ class win(QDialog):
         self.resize(400, 300)
         self.btnOpen = QPushButton('Open', self)
         self.btnSave = QPushButton('Save', self)
-        self.btnProcess = QPushButton('OCR(TF)', self)
-        self.btnProcess2 = QPushButton('OCR(OV)', self)
+        self.btnProcess = QPushButton('OCR', self)
         self.btnQuit = QPushButton('exit', self)
         self.label = QLabel()
 
@@ -60,13 +61,12 @@ class win(QDialog):
         layout.addWidget(self.btnOpen, 0, 0, 1, 1)
         layout.addWidget(self.btnSave, 1, 0, 1, 1)
         layout.addWidget(self.btnProcess, 2, 0,1, 1)
-        layout.addWidget(self.btnProcess2, 3, 0,1, 1)
-        layout.addWidget(self.btnQuit, 4, 0, 1, 1)
+        layout.addWidget(self.btnQuit, 3, 0, 1, 1)
 
         # UI interation with function
         self.btnOpen.clicked.connect(self.openSlot)
         self.btnSave.clicked.connect(self.saveSlot)
-        self.btnProcess.clicked.connect(self.processSlot)
+
         #self.btnProcess.clicked.connect(self.processSlot)
         self.btnQuit.clicked.connect(self.close)
 
@@ -103,38 +103,35 @@ class win(QDialog):
         if self.img.size == 1:
             return
         self.img = cv2.imread(self.ofileName, -1)
-        print(args["ovmodel"],args["device"],args["plugin_dir"],args["cpu_extension"])
-        self.img, self.dt, self.rt = self.tfinfer.start(self.img)
-        Detection_time = self.dt['net'] + self.dt['restore'] + self.dt['nms']
-    
-        # Show times
-        cv2.putText(self.img, 'Tensorflow', (50,50), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0,0,255), 1, cv2.LINE_AA)
-        cv2.putText(self.img, 'Detection Time: '+str('%.4f'%Detection_time)+'s', (50,100), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0,0,255), 1, cv2.LINE_AA)
-        cv2.putText(self.img, 'Recognition Time: '+str('%.4f'%self.rt)+'s', (50,150), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0,0,255), 1, cv2.LINE_AA)
 
-        self.refreshShow()
+        if args["md"] == 'tf':
+            print(args["ovmodel"],args["device"],args["plugin_dir"],args["cpu_extension"])
+            self.img, self.dt, self.rt = self.tfinfer.start(self.img)
+            Detection_time = self.dt['net'] + self.dt['restore'] + self.dt['nms']
+        
+            # Show times
+            cv2.putText(self.img, 'Tensorflow', (50,50), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0,0,255), 1, cv2.LINE_AA)
+            cv2.putText(self.img, 'Detection Time: '+str('%.4f'%Detection_time)+'s', (50,100), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0,0,255), 1, cv2.LINE_AA)
+            cv2.putText(self.img, 'Recognition Time: '+str('%.4f'%self.rt)+'s', (50,150), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0,0,255), 1, cv2.LINE_AA)
 
+            self.refreshShow()
 
-    def processSlot2(self):
-        if self.img.size == 1:
-            return
-        self.img = cv2.imread(self.ofileName, -1)
-        print(args["ovmodel"],args["device"],args["plugin_dir"],args["cpu_extension"])
-        self.ovinfer = OVinference(args["ovmodel"],args["device"],args["plugin_dir"],args["cpu_extension"])
-        self.ovinfer.load_model()
+        elif args["md"] == 'ov':
 
-        self.img, self.dt, self.rt = self.ovinfer.start(self.img)
-        Detection_time = self.dt['net'] + self.dt['restore'] + self.dt['nms']
+            print(args["ovmodel"],args["device"],args["plugin_dir"],args["cpu_extension"])
+            self.ovinfer = OVinference(args["ovmodel"],args["device"],args["plugin_dir"],args["cpu_extension"])
+            self.ovinfer.load_model()
 
-        # Show times
-        cv2.putText(self.img, 'OpenVino '+ args["device"] + ' ' + args["fp"], (50,50), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0,0,255), 1, cv2.LINE_AA)
-        cv2.putText(self.img, 'Detection Time: '+str('%.4f'%Detection_time)+'s', (50,100), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0,0,255), 1, cv2.LINE_AA)
-        cv2.putText(self.img, 'Recognition Time: '+str('%.4f'%self.rt)+'s', (50,150), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0,0,255), 1, cv2.LINE_AA)
+            self.img, self.dt, self.rt = self.ovinfer.start(self.img)
+            Detection_time = self.dt['net'] + self.dt['restore'] + self.dt['nms']
 
-        self.refreshShow()
+            # Show times
+            cv2.putText(self.img, 'OpenVino '+ args["device"] + ' ' + args["fp"], (50,50), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0,0,255), 1, cv2.LINE_AA)
+            cv2.putText(self.img, 'Detection Time: '+str('%.4f'%Detection_time)+'s', (50,100), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0,0,255), 1, cv2.LINE_AA)
+            cv2.putText(self.img, 'Recognition Time: '+str('%.4f'%self.rt)+'s', (50,150), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0,0,255), 1, cv2.LINE_AA)
 
-
-            
+            self.refreshShow()
+                      
 
     def refreshShow(self):
         # convert opencv image to  Qimage
@@ -151,35 +148,45 @@ class Options(QDialog):
         QDialog.__init__(self)
         self.child=Ui_Dialog()
         self.child.setupUi(self)
-        self.listenRadio()
+        self.listenCombo()
 
-    def listenRadio(self):
-        self.child.radioButton_3.toggled.connect(self.SetPara1)
-        self.child.radioButton_4.toggled.connect(self.SetPara2)
-        self.child.radioButton_5.toggled.connect(self.SetPara3)
-        self.child.radioButton_6.toggled.connect(self.SetPara4)
+    def listenCombo(self):
+
         self.child.buttonBox.rejected.connect(self.close)
+        self.child.comboBox.currentIndexChanged.connect(self.SetPara1)
 
     def SetPara1(self):
-        args["device"] = 'GPU'
+        self.Index = self.child.comboBox.currentIndex()
+        if self.Index == 1:
+            args["md"] = 'tf'
+        elif self.Index == 2:
+            args["md"] = 'ov'
+            args["device"] = 'CPU'
+            args["ovmodel"] = "./east_icdar2015_resnet_v1_50_rbox/FP32/1080_1920/frozen_model_temp.xml"
+            args["fp"] = "FP32"
+        elif self.Index == 3:
+            args["md"] = 'ov'
+            args["device"] = 'CPU'
+            args["ovmodel"] = "./east_icdar2015_resnet_v1_50_rbox/INT8/1080_1920/frozen_model_temp.xml"
+            args["fp"] = "INT8"
+        elif self.Index == 4:
+            args["md"] = 'ov'
+            args["device"] = 'GPU'
+            args["ovmodel"] = "./east_icdar2015_resnet_v1_50_rbox/FP16/1080_1920/frozen_model_temp.xml"
+            args["fp"] = "FP16"
+        elif self.Index == 5:
+            args["md"] = 'ov'
+            args["device"] = 'GPU'
+            args["ovmodel"] = "./east_icdar2015_resnet_v1_50_rbox/FP32/1080_1920/frozen_model_temp.xml"
+            args["fp"] = "FP32"
 
-    def SetPara2(self):
-        args["device"] = 'CPU'
-
-    def SetPara3(self):
-        args["ovmodel"] = "./east_icdar2015_resnet_v1_50_rbox/FP16/1080_1920/frozen_model_temp.xml"
-        args["fp"] = "FP16"
-
-    def SetPara4(self):
-        args["ovmodel"] = "./east_icdar2015_resnet_v1_50_rbox/FP32/frozen_model_temp.xml"
-        args["fp"] = "FP32"
     
 if __name__ == '__main__':
     a = QApplication(sys.argv)
     w = win()
     o = Options()
-    w.btnProcess2.clicked.connect(o.show)
-    o.child.buttonBox.accepted.connect(w.processSlot2)
+    w.btnProcess.clicked.connect(o.show)
+    o.child.buttonBox.accepted.connect(w.processSlot)
     w.show()  
 
     sys.exit(a.exec_())
