@@ -69,3 +69,4 @@ python3 ocr-video-demo/save_key_events.py -i testinput/1080p.mp4 -m /east_icdar2
 ```
 python ocr-video-demo/save_key_events.py -i testinput/1080p.mp4 -m /east_icdar2015_resnet_v1_50_rbox/FP32/96_512/frozen_model_temp.xml -d CPU -l openvino/deployment_tools/inference_engine/lib/intel64/Release/cpu_extension.dll -o output/
 ```
+
