@@ -34,29 +34,37 @@ vi <user_directory>/.bashrc
 ```
 source <user_directory>/OCR-Tool-R/openvino/bin/setupvars.sh
 ```
-for windows：the OpenVINO environment can only be activated by the absolute path of the system and then run the project by switching directories under the path.
+for windows：
+```
+the OpenVINO environment can only be activated by the absolute path of the system and then run the project by switching directories under the path.
+```
 
 
 ### set tesseract environment for windows
 1.Configuring environment variables,add tesseract to the system path,language packs can be selected during installation（If you don't choose, the default can only parse English）
+```
 path = <user_directory>Tesseract-OCR
 Language directory = Tesseract-OCR\tessdata
 ```
 2.After the installation is complete, open the command line and type tesseract to check if the installation was successful and type tesseract -v for viewing version.
-```
+
 3.install pillow, pytesseract module for python:
+```
 Pip install pillow
 Pip install pytesseract
 ```
 4.after the installation is complete, modify the pytesseract.py source code:
+```
 Find the tesseract_cmd=”tesseract” line and change the following tesseract to tessearct-ocr.exe in the local installation directory, such as: c:\Program Files (x86)\Tesseract-OCR\tesseract.exe.
 ```
 
 ### set PyQt5 environment for windows
-1.pip install PyQt5,pip install PyQt5-tools
-After the installation is complete, you can see the PyQt5 and pyqt5-tools directories in the Lib\site-packages directory under the Python installation directory.
+1.install pyqt for python:
 ```
-2. Add the installation directory of PyQt5-tools to the system environment variable Path.
+pip install PyQt5,pip install PyQt5-tools
+After the installation is complete, you can see the PyQt5 and pyqt5-tools directories in the python Lib\site-packages directory under the Python installation directory.
+```
+2.Add the installation directory of PyQt5-tools to the system environment variable Path.
 
 
 
